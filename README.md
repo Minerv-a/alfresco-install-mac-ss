@@ -14,7 +14,7 @@ Tutte le versioni più recenti di Alfresco Content Manager non prevedono un inst
 Lo script fornito a corredo di questo documento serve per automatizzare parzialmente l'installazione "manuale" di ACS 6.0.7, ed è una versione leggermente modificata di quello creato da [michel_chen_ri](https://hub.alfresco.com/t5/user/viewprofilepage/user-id/16578), descritto e disponibile sull'[hub di Alfresco](https://hub.alfresco.com/t5/alfresco-content-services-blog/a-script-to-install-alfresco-community-6-0/ba-p/288988).  
 
 Nella fattispecie, lo script originario è stato semplicemente adattato per:
-- utilizzare PostgreSQL al posto di MySQL
+- utilizzare **PostgreSQL** al posto di MySQL
 - modificare le impostazioni di memoria per la Java Virtual Machine nel **setenv.sh** di Tomcat
 - rimuovere un riferimento al fuso orario (TimeZone) "PST" durante la generazione di **alfresco.sh**, che con le versioni di Postgres successive alla 8 darebbe errore.  
 
@@ -23,28 +23,27 @@ Lo script **install-alfresco-6x-ss.sh** procede a installare Alfresco Content Se
 
 ## PREREQUISITI
 
-Alfresco Content Services richiede, come prerequisito per l'installazione e/o come condizione per il proprio corretto funzionamento, l'installazione di altre applicazioni, nelle versioni dichiarate compatibili sulla documentazione ufficiale; per ACS 6.0.7, si veda:
-<https://docs.alfresco.com/6.0/concepts/supported-platforms-ACS.html>
+Alfresco Content Services richiede, come prerequisito per l'installazione e/o come condizione per il proprio corretto funzionamento, l'installazione preliminare di altre applicazioni.    
 
-Le applicazioni in questione sono, come indicato al link precedente:
-- Java 1.8 (OpenJDK 11.0.1 oppure Oracle JDK 1.8.0_161 - io ho usato Oracle JDK 1.8.0_251 e non ho avuto problemi)
-- Ghostscript
-- ImageMagick 7.0.7
-- LibreOffice 5.4.6
-- PostgreSQL 10.1 (il cui relativo JDBC driver è **Postgresql-42.2.1.jar**) 
+Le applicazioni in questione, nelle loro versioni dichiarate [compatibili con ACS 6.0.7](https://docs.alfresco.com/6.0/concepts/supported-platforms-ACS.html), sono:  
+- **Java 1.8** (OpenJDK 11.0.1 oppure Oracle JDK 1.8.0_161 - io ho usato Oracle JDK 1.8.0_251 e non ho avuto problemi)
+- **Ghostscript** (versione non fornita, io ho usato quella su *Homebrew* al 21 luglio 2020 e pare funzionare)
+- **ImageMagick 7.0.7**
+- **LibreOffice 5.4.6**
+- **PostgreSQL 10.1** (il cui relativo JDBC driver è **Postgresql-42.2.1.jar**) 
 
-Prima di installare Alfresco C.E. 6.0.7 su Catalina OS ho quindi effettuato i seguenti passaggi.  
+Prima di installare Alfresco C.E. 6.0.7 ho quindi effettuato i seguenti passaggi.  
 
 
 ### 1  - INSTALLAZIONE DI JAVA 1.8
 
 Ho scaricato e installato l'ultimo JDK di Java 8 (JDK 1.8.0_251) dal sito Oracle.  
 
-Ho aggiunto la variabile d'ambiente **JAVA_HOME** (per verificarne la presenza/assenza usare il comando **printenv** da terminale), valorizzandola con il percorso della cartella *Contents/Home* della propria installazione Java: vedere sotto */Library/Java/JavaVirtualMachines/*.
+Ho aggiunto la variabile d'ambiente **JAVA_HOME** (per verificarne la presenza/assenza usare il comando **printenv** da terminale), valorizzandola con il percorso della cartella *Contents/Home* della propria installazione Java: vedere sotto */Library/Java/JavaVirtualMachines/*.  
 Ipotizziamo che, come nel mio caso, questo percorso sia:
 > /Library/Java/JavaVirtualMachines/jdk1.8.0_251.jdk/Contents/Home  
 
-Per impostare JAVA_HOME sotto **zsh**, aggiungere nel file **.zprofile** (creandolo se manca) della propria home directory questa riga:
+Per impostare **JAVA_HOME** sotto **zsh**, aggiungere nel file **.zprofile** (creandolo se manca) della propria home directory questa riga:
 > export JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk1.8.0_251.jdk/Contents/Home  
 
 Se invece si usa la Bash shell (**bash**), la stessa riga va aggiunta al file **.bash_profile** (creandolo se manca), sempre nella propria home directory.  
@@ -54,39 +53,37 @@ Se invece si usa la Bash shell (**bash**), la stessa riga va aggiunta al file **
 
 Ho installato GhostScript da terminale, tramite [Homebrew](http://mxcl.github.com/homebrew/):
 > brew install ghostscript  
-> 
+
 
 ### 3 - INSTALLAZIONE DI IMAGE MAGICK
 
 Viene usato da Alfresco per l'anteprima delle immagini.
 Ho installato ImageMagick da terminale, tramite [Homebrew](http://mxcl.github.com/homebrew/):
 > brew install imagemagick  
-> 
+
 
 ### 4 - INSTALLAZIONE DI LIBRE OFFICE
 
-Si vedano le istruzioni sul sito di LibreOffice: 
-<https://www.libreoffice.org/get-help/install-howto/macos/>  
+Si vedano le [istruzioni sul sito ufficiale di LibreOffice](https://www.libreoffice.org/get-help/install-howto/macos/).  
 
 
 ### 5 - INSTALLAZIONE DI POSTGRESQL
 
-Nella documentazione ufficiale Alfresco, la versione 6.0.7 di Alfresco Content Service è dichiarata compatibile con la versione 10.1 di PostgreSQL.
-Io ho installato la versione 12, e - per il momento - non ho avuto problemi.
-Seguire ad esempio le istruzioni riportate qui:
-<http://databasemaster.it/installare-postgresql-mac/>  
+Nella documentazione ufficiale Alfresco, la versione 6.0.7 di Alfresco Content Service è dichiarata compatibile con la versione 10.1 di PostgreSQL.  
+Io ho installato la versione 12, e - per il momento - non ho avuto problemi.  
+Seguire ad esempio le [istruzioni riportate qui](http://databasemaster.it/installare-postgresql-mac/).  
 
 Una volta installato Postgres, consiglio di aprire una console **pgsql** da */Applications/PostgreSQL 12* e di creare un nuovo DB ("alfresco"), appartenente all'utente root default "postgres", e una nuova utenza abilitata a tale DB avente nome (e password) "alfresco":
 > CREATE USER alfresco WITH PASSWORD 'alfresco';  
 > CREATE DATABASE alfresco OWNER postgres ENCODING 'UTF8';  
 > GRANT ALL PRIVILEGES ON DATABASE alfresco TO alfresco;  
 
-**ATTENZIONE:** L'utenza di S.O. che viene creata automaticamente a seguito di quella PostgreSQL, nel mio caso aveva una password diversa da "alfresco": ero dovuta andare su *Mela > Preferenze di sistema... > Utenti e Gruppi* per modificarne la password.  
+**ATTENZIONE:** L'utenza di S.O. che viene creata automaticamente a seguito di quella PostgreSQL, nel mio caso aveva una password diversa da "alfresco": ero dovuta andare su *Mela > Preferenze di sistema... > Utenti e Gruppi* per modificarla (riportandola ad "alfresco").  
 
 
-### 6 - INSTALLAZIONE DI ALFRESCO CONTENT SERVICES
+## INSTALLAZIONE DI ALFRESCO CONTENT SERVICES
 
-Le istruzioni che seguono sono la copia, tradotta e leggermente modificata, di questo [post sull'hub di Alfresco](https://hub.alfresco.com/t5/alfresco-content-services-blog/a-script-to-install-alfresco-community-6-0/ba-p/288988).  
+Le istruzioni che seguono sono la copia, tradotta e leggermente modificata, del [post sull'hub di Alfresco](https://hub.alfresco.com/t5/alfresco-content-services-blog/a-script-to-install-alfresco-community-6-0/ba-p/288988) citato in precedenza.  
 
 Per usare lo script è necessario prima scaricare i seguenti file:
 - [Tomcat 8.5.37](https://archive.apache.org/dist/tomcat/tomcat-8/v8.5.37/bin/apache-tomcat-8.5.37.zip)
