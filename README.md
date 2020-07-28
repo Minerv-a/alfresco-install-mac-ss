@@ -30,7 +30,7 @@ Le applicazioni in questione, nelle loro versioni dichiarate [compatibili con AC
 - **Ghostscript** (versione non fornita, io ho usato quella su *Homebrew* al 21 luglio 2020 e pare funzionare)
 - **ImageMagick 7.0.7**
 - **LibreOffice 5.4.6**
-- **PostgreSQL 10.1** (il cui relativo JDBC driver è **Postgresql-42.2.1.jar**) 
+- **PostgreSQL 10.1** (il cui relativo driver JDBC è **Postgresql-42.2.1.jar**) 
 
 Prima di installare Alfresco C.E. 6.0.7 ho quindi effettuato i seguenti passaggi.  
 
@@ -57,7 +57,7 @@ Ho installato GhostScript da terminale, tramite [Homebrew](http://mxcl.github.co
 
 ### 3 - INSTALLAZIONE DI IMAGE MAGICK
 
-Viene usato da Alfresco per l'anteprima delle immagini.
+Viene usato da Alfresco per l'anteprima delle immagini.  
 Ho installato ImageMagick da terminale, tramite [Homebrew](http://mxcl.github.com/homebrew/):
 > brew install imagemagick  
 
@@ -94,12 +94,15 @@ Dopodiché mettere lo script e i tre file appena scaricati in una apposita carte
 > mkdir /Applications/alfresco  
 > cd /Applications/alfresco  
 
-Sotto la cartella con lo script e gli zip di installazione, creare una nuova cartella, vuota: questa nuova cartella andrà a contenere la nostra installazione Alfresco...  
+Sotto la cartella con lo script e gli zip di installazione, creare una nuova cartella, vuota: questa nuova cartella andrà a contenere la nostra installazione Alfresco.  
 > mkdir 6.0.7-ga  
 
 Posizioniamoci nella cartella vuota appena creata per eseguire lo script:  
 > cd 6.0.7-ga  
 > ../install-alfresco-6x-ss.sh  
+
+Per verificare il buon esito dell'installazione, digitare il seguente indirizzo in un browser e fare login (username e password sono entrambi "**admin**"):
+> http://localhost:8080/share  
 
  
 ## APPENDICE: COME AVVIARE E FERMARE I SERVER
@@ -114,8 +117,8 @@ I server Alfresco e Solr possono invece essere avviati in qualsiasi ordine, purc
 
 Per avviare e fermare il server Postgres:
 > cd /Library/PostgreSQL/12     # da sostituire col percorso corretto per la propria installazione Postgres  
-> su postgres                   # verrà richiesta la password, "postgres"
-> bin/pg_ctl -D data start
+> su postgres                   # verrà richiesta la password, "postgres"  
+> bin/pg_ctl -D data start  
 > bin/pg_ctl -D data stop  
 
 Per avviare e fermare il server Alfresco/Tomcat:
